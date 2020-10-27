@@ -1,0 +1,86 @@
+{
+    "name": "U2net3D",
+    "run_id": "64_192_depth_4_start_32_udepth_3",
+    "n_gpu": 1,
+    "arch": {
+        "type": "U2net3D",
+        "args": {
+            "in_channels": 1,
+            "out_channels": 1,
+            "depth": 4,
+            "start_channels": 32,
+            "u_depth": 3,
+            "is_bn": true,
+            "is_res": true,
+            "drop_rate": 0
+        }
+    },
+    "dataloader_train": {
+        "type": "Liver3DLoader",
+        "args": {
+            "data_dir": "/dataset/MIXED/train_64_192_random",
+            "batch_size": 3,
+            "buffer": 200,
+            "buffer_name": "",
+            "len_dataset": -1,
+            "start_index": 0,
+            "shuffle": true,
+            "num_workers": 4
+        }
+    },
+    "dataloader_val": {
+        "type": "Liver3DLoader",
+        "args": {
+            "data_dir": "/dataset/MIXED/val_64_192_random",
+            "batch_size": 3,
+            "buffer": 200,
+            "buffer_name": "",
+            "len_dataset": -1,
+            "start_index": 0,
+            "shuffle": true,
+            "num_workers": 4
+        }
+    },
+    "trainer_module": {
+        "type": "UTrainer",
+        "args": {
+            "batch_size": 5,
+            "subvols_path": ""
+        }
+    },
+    "trainer": {
+        "epochs": 200,
+        "save_dir": "/saved",
+        "save_period": 1,
+        "verbosity": 2,
+        "monitor": "max val_dice",
+        "early_stop": 12,
+        "tensorboard": false
+    },
+    "lr_scheduler": {
+        "type": "ReduceLROnPlateau",
+        "args": {
+            "mode": "max",
+            "factor": 0.3,
+            "patience": 5,
+            "verbose": true
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.0001,
+            "weight_decay": 0.0001,
+            "amsgrad": true
+        }
+    },
+    "metrics": [
+        "dice"
+    ],
+    "loss": {
+        "type": "BCELoss",
+        "args": {
+            "reduction": "mean"
+        }
+    }
+}

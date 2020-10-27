@@ -1,0 +1,78 @@
+{
+    "name": "Unet2D",
+    "run_id": "d4",
+    "n_gpu": 1,
+    "arch": {
+        "type": "Unet2D",
+        "args": {
+            "in_channels": 1,
+            "out_channels": 1,
+            "depth":4,
+            "bn_check": false,
+            "drop_rate": 0.2
+        }
+    },
+    "dataloader_train": {
+        "type": "Data2DLoader",
+        "args":{
+            "data_dir": "/dataset/data2d/data64",
+            "eof_name": "train",
+            "batch_size": 64,
+            "shuffle": true,
+            "validation_split": 0,
+            "num_workers": 6
+        }
+    },
+    "dataloader_val": {
+        "type": "Data2DLoader",
+        "args":{
+            "data_dir": "/dataset/data2d/data64",
+            "eof_name": "val",
+            "batch_size": 64,
+            "shuffle": false,
+            "validation_split": 0,
+            "num_workers": 6
+        }
+    },
+    "trainer_module": {
+        "type": "UTrainer",
+        "args": {
+            "batch_size": 5,
+            "subvols_path": "/dataset/training_data_vessel/val/"
+        }
+    },
+    "trainer": {
+        "epochs": 200,
+        "save_dir": "/saved",
+        "save_period": 10,
+        "verbosity": 2,
+        "monitor": "max val_dice",
+        "early_stop": 20,
+        "tensorboard": true
+    },
+    "lr_scheduler": {
+        "type": "ReduceLROnPlateau",
+        "args": {
+            "mode": "max",
+            "factor": 0.3,
+            "patience": 5,
+            "verbose": true
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 5e-5,
+            "weight_decay": 0,
+            "amsgrad": true
+        }
+    },
+    "metrics": [
+        "dice", "recall", "FPR", "FNR"
+    ],
+    "loss": {
+    "type": "DiceLoss",
+    "args": {
+    }
+}
+}

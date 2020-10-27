@@ -1,0 +1,73 @@
+{
+    "name": "unet3d_ori",
+    "run_id": "dice",
+    "n_gpu": 1,
+    "arch": {
+        "type": "Unet3D",
+        "args": {
+            "in_channels": 1,
+            "out_channels": 1,
+            "depth": 4,
+            "bn_check": true,
+            "drop_rate": 0.4
+        }
+    },
+    "dataloader_train": {
+        "type": "Vessel3DLoader",
+        "args": {
+            "data_dir": "/dataset/data6496/train",
+            "batch_size": 10,
+            "buffer": 400,
+            "buffer_name": "data",
+            "len_dataset": 5000,
+            "start_index": 0,
+            "shuffle": true,
+            "num_workers": 8
+        }
+    },
+    "dataloader_val": {
+        "type": "Vessel3DLoader",
+        "args": {}
+    },
+    "trainer_module": {
+        "type": "UTrainer",
+        "args": {
+            "batch_size": 5,
+            "subvols_path": "/dataset/training_data_vessel/val/"
+        }
+    },
+    "trainer": {
+        "epochs": 200,
+        "save_dir": "/saved",
+        "save_period": 5,
+        "verbosity": 2,
+        "monitor": "max val_dice",
+        "early_stop": 15,
+        "tensorboard": true
+    },
+    "lr_scheduler": {
+        "type": "ReduceLROnPlateau",
+        "args": {
+            "mode": "max",
+            "factor": 0.3,
+            "patience": 6,
+            "verbose": true
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args": {
+            "lr": 5e-5,
+            "weight_decay": 0,
+            "amsgrad": true
+        }
+    },
+    "metrics": [
+        "dice",
+        "recall"    
+    ],
+    "loss": {
+        "type": "DiceLoss",
+        "args": {}
+    }
+}
